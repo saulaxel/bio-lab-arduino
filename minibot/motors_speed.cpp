@@ -75,6 +75,9 @@ void motors_speed(float goal_speed_left, float goal_speed_right){
 
   LKp = 0.6; LKi = 0.00085; LKd = 0.0013;
   RKp = 0.98; RKi = 0.0012; RKd = 0.0007;
+
+  if(goal_speed_left  == 0) cumError_L = 0;
+  if(goal_speed_right == 0) cumError_R = 0;
   
   if(goal_speed_left < 0 && goal_speed_right < 0) {
     LKp = 0.6; LKi = 0.001; LKd = 0.0013;

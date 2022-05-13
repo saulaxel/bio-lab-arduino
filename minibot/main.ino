@@ -9,6 +9,7 @@
 
 ros::NodeHandle nh;
 
+int timer = 0;
 long encoder_data[2];
 float left_speed, right_speed;
  
@@ -51,6 +52,7 @@ void motorsSpeedCallback(const std_msgs::Float32MultiArray& msg){
    
   left_speed  = msg.data[0];
   right_speed = msg.data[1];
+  timer = 0;
 }
 
 void setup() {
@@ -70,6 +72,9 @@ void loop() {
   publish_encoders();
   publish_sensors_data();
   motors_speed(left_speed, right_speed);
+
+  if(timer < 200) timer++;
+  else motors_speed(0, 0);
 
   nh.spinOnce();
   delay(16);
