@@ -8,7 +8,7 @@ void read_sensors_data() {
     for(int i=0; i<8; i++)
         ldr[i] = analogRead(i);
 
-    for(int i=8; i<16; i++)
+    for(int i=8; i<15; i++)
 	sharp[i-8] = analogRead(i);
 }
 
