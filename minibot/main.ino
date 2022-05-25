@@ -47,7 +47,7 @@ void publish_sensors_data(){
 
   read_sensors_data();
   light_sensors_msg.data_length = 8;
-  sharp_sensors_msg.data_length = 8;
+  sharp_sensors_msg.data_length = 7;
   
   light_sensors_msg.data = get_light_sensors();
   sharp_sensors_msg.data = get_sharp_sensors();
