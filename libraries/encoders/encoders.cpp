@@ -35,7 +35,7 @@ volatile long right_count(){
 	return rightCount;
 }
 
-bool set_encoders_input(){
+void set_encoders_input(){
 	pinMode(RH_ENCODER_A, INPUT);
 	pinMode(RH_ENCODER_B, INPUT);
 	pinMode(LH_ENCODER_A, INPUT);
@@ -43,5 +43,4 @@ bool set_encoders_input(){
 
 	attachInterrupt(0, rightEncoderEvent, CHANGE);
 	attachInterrupt(1, leftEncoderEvent, CHANGE);
-	return true;
 }

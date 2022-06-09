@@ -4,7 +4,6 @@ ARDUINO_PORT = /dev/ttyUSB*
 USER_LIB_PATH += /home/$(USER)/Arduino/libraries
 ARDUINO_LIBS += ros_lib
 ARDUINO_LIBS += sensors
-ARDUINO_LIBS += battery
 ARDUINO_LIBS += encoders
 ARDUINO_LIBS += motors_pwm 
 

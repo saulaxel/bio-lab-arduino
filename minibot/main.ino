@@ -1,6 +1,5 @@
 #include "ros.h"
 #include "sensors.h"
-#include "battery.h"
 #include "motors_speed.h"
 #include "std_msgs/Int16.h"
 #include "std_msgs/Int16MultiArray.h"
@@ -17,6 +16,7 @@ float left_speed, right_speed;
  
 std_msgs::Int16 batt_perc_msg;
 std_msgs::Int32MultiArray encoders_msg;
+std_msgs::Int16MultiArray line_sensors_msg;
 std_msgs::Int16MultiArray light_sensors_msg;
 std_msgs::Int16MultiArray sharp_sensors_msg;
 
@@ -24,12 +24,13 @@ void motorsSpeedCallback(const std_msgs::Float32MultiArray& msg);
 
 ros::Publisher battPercPub("/battery_data", &batt_perc_msg);
 ros::Publisher encodersPub("/encoders_data", &encoders_msg);
+ros::Publisher lineSensorsPub("/line_sensors", &line_sensors_msg);
 ros::Publisher lightSensorsPub("/light_sensors", &light_sensors_msg);
 ros::Publisher sharpSensorsPub("/sharp_sensors", &sharp_sensors_msg);
 ros::Subscriber<std_msgs::Float32MultiArray> subMotorsSpeed("/speed_motors", motorsSpeedCallback);
 
 void publish_battery() {
-  batt_perc_msg.data = read_battery();
+  batt_perc_msg.data = get_battery_sensor();
   battPercPub.publish(&batt_perc_msg);
 }
 
@@ -46,12 +47,15 @@ void publish_encoders(){
 void publish_sensors_data(){
 
   read_sensors_data();
+  line_sensors_msg.data_length  = 2;
   light_sensors_msg.data_length = 8;
   sharp_sensors_msg.data_length = 7;
   
+  line_sensors_msg.data  = get_line_sensors();
   light_sensors_msg.data = get_light_sensors();
   sharp_sensors_msg.data = get_sharp_sensors();
 
+  lineSensorsPub.publish(&line_sensors_msg);
   lightSensorsPub.publish(&light_sensors_msg);
   sharpSensorsPub.publish(&sharp_sensors_msg);  
 }
@@ -69,6 +73,7 @@ void setup() {
   
   nh.advertise(battPercPub);
   nh.advertise(encodersPub);
+  nh.advertise(lineSensorsPub);
   nh.advertise(lightSensorsPub);
   nh.advertise(sharpSensorsPub);
   nh.subscribe(subMotorsSpeed);
@@ -87,5 +92,5 @@ void loop() {
   else motors_speed(0, 0);
 
   nh.spinOnce();
-  delay(16);
+  delay(15);
 }
