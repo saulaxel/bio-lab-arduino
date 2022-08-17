@@ -13,6 +13,13 @@ int leftFoward = HIGH, rightFoward = HIGH;
 double LKp, LKi, LKd;
 double RKp, RKi, RKd;
 
+//VALUES FOR WHEELS IF GOES FOWARD
+double LKp1, LKi1, LKd1;
+double RKp1, RKi1, RKd1;
+//VALUES FOR WHEELS IF GOES BACKWARD
+double LKp2, LKi2, LKd2;
+double RKp2, RKi2, RKd2;
+
 double error_L, lastError_L, cumError_L, rateError_L;
 double error_R, lastError_R, cumError_R, rateError_R;
 
@@ -28,10 +35,17 @@ double elapsedTime, samplingTime = 40;
 
 double samplingTimeSec = samplingTime / 1000.0;
 
-void set_motors()
+void set_motors(float left_pid1[3], float left_pid2[3], float right_pid1[3], float right_pid2[3])
 {
   set_motors_output();
   set_encoders_input();
+
+  LKp1 = left_pid1[0]; LKi1 = left_pid1[1]; LKd1 = left_pid1[2];
+  RKp1 = right_pid1[0]; RKi1 = right_pid1[1]; RKd1 = right_pid1[2];
+  
+  LKp2 = left_pid2[0]; LKi2 = left_pid2[1]; LKd2 = left_pid2[2];
+  RKp2 = right_pid2[0]; RKi2 = right_pid2[1]; RKd2 = right_pid2[2];
+
 }
 
 volatile long encoder_left()
@@ -73,15 +87,20 @@ void speedsToPwm(double output_L, double output_R)
 
 void motors_speed(float goal_speed_left, float goal_speed_right){
 
-  LKp = 0.6; LKi = 0.00085; LKd = 0.0013;
-  RKp = 0.98; RKi = 0.0012; RKd = 0.0007;
+  //LKp = 0.6; LKi = 0.00085; LKd = 0.0013;
+  //RKp = 0.98; RKi = 0.0012; RKd = 0.0007;
+  LKp = LKp1; LKi = LKi1; LKd = LKd1;
+  RKp = RKp1; RKi = RKi1; RKd = RKd1;
 
   if(goal_speed_left  == 0) cumError_L = 0;
   if(goal_speed_right == 0) cumError_R = 0;
   
   if(goal_speed_left < 0 && goal_speed_right < 0) {
-    LKp = 0.6; LKi = 0.001; LKd = 0.0013;
-    RKp = 0.6; RKi = 0.0012; RKd = 0.0007;
+    LKp = LKp2; LKi = LKi2; LKd = LKd2;
+    RKp = RKp2; RKi = RKi2; RKd = RKd2;
+
+    //LKp = 0.6; LKi = 0.001; LKd = 0.0013;
+    //RKp = 0.6; RKi = 0.0012; RKd = 0.0007;
   }
 
   currentTime = millis();

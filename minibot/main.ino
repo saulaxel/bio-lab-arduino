@@ -78,8 +78,48 @@ void setup() {
   nh.advertise(sharpSensorsPub);
   nh.subscribe(subMotorsSpeed);
 
-  set_motors(); 
+ 
+  while (!nh.connected()) { nh.spinOnce(); }
+  
+  bool params_error = false;
+  char log_msg[50];
+  char Kp[8], Ki[8], Kd[8];
+  float left_pid1[3], left_pid2[3], right_pid1[3], right_pid2[3];
+
+  if(! nh.getParam("/left_pid1", left_pid1, 3))   { params_error = true; }
+  if(! nh.getParam("/left_pid2", left_pid2, 3))   { params_error = true; }
+  if(! nh.getParam("/right_pid1", right_pid1, 3)) { params_error = true; }
+  if(! nh.getParam("/right_pid2", right_pid2, 3)) { params_error = true; }
+
+  if(params_error) { nh.logerror("File: ~/Minibot/catkin_ws/src/rob2w_description/params/pid.yaml did not load values, check it please"); }
+
+  dtostrf(left_pid1[0], 6, 2, Kp);
+  dtostrf(left_pid1[1], 6, 5, Ki);
+  dtostrf(left_pid1[2], 6, 4, Kd);
+  sprintf(log_msg, "Left pid 1->[%s, %s, %s]", Kp, Ki, Kd);
+  nh.loginfo(log_msg);
+
+  dtostrf(left_pid2[0], 6, 2, Kp);
+  dtostrf(left_pid2[1], 6, 5, Ki);
+  dtostrf(left_pid2[2], 6, 4, Kd);
+  sprintf(log_msg, "Left pid 2->[%s, %s, %s]", Kp, Ki, Kd);
+  nh.loginfo(log_msg);
+
+  dtostrf(right_pid1[0], 6, 2, Kp);
+  dtostrf(right_pid1[1], 6, 5, Ki);
+  dtostrf(right_pid1[2], 6, 4, Kd);
+  sprintf(log_msg, "Right pid 1->[%s, %s, %s]", Kp, Ki, Kd);
+  nh.loginfo(log_msg);
+
+  dtostrf(right_pid2[0], 6, 2, Kp);
+  dtostrf(right_pid2[1], 6, 5, Ki);
+  dtostrf(right_pid2[2], 6, 4, Kd);
+  sprintf(log_msg, "Right pid 2->[%s, %s, %s]", Kp, Ki, Kd);
+  nh.loginfo(log_msg);
+ 
+  set_motors(left_pid1, left_pid2, right_pid1, right_pid2);
 }
+
 
 void loop() {
 

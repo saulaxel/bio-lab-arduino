@@ -16,6 +16,14 @@ void setup()
 
 void loop()
 {
+
+
+  nh.logdebug("Debug Statement");
+  nh.loginfo("Program info");
+  nh.logwarn("Warnings.");
+  nh.logerror("Errors..");
+  nh.logfatal("Fatalities!");
+ 
   str_msg.data = hello;
   chatter.publish( &str_msg );
   nh.spinOnce();
