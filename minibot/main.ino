@@ -47,7 +47,7 @@ void publish_encoders(){
 void publish_sensors_data(){
 
   read_sensors_data();
-  line_sensors_msg.data_length  = 2;
+  line_sensors_msg.data_length  = 3;
   light_sensors_msg.data_length = 8;
   sharp_sensors_msg.data_length = 7;
   

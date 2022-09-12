@@ -2,15 +2,17 @@
 
 #define R_LSENSOR 12
 #define L_LSENSOR 13
+#define C_LSENSOR 22
 
 int ldr[8];
 int sharp[8];
-int line[2];
+int line[3];
 int battery;
 
 void set_line_sensors() {
     pinMode(R_LSENSOR, INPUT);
     pinMode(L_LSENSOR, INPUT);
+    pinMode(C_LSENSOR,INPUT);
 }
 
 void read_sensors_data() {
@@ -24,6 +26,7 @@ void read_sensors_data() {
     battery = analogRead(15);
     line[0] = digitalRead(R_LSENSOR);    
     line[1] = digitalRead(L_LSENSOR);
+    line[2] = digitalRead(C_LSENSOR);
 }
 
 int get_battery_sensor(){
