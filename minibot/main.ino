@@ -13,12 +13,13 @@ ros::NodeHandle nh;
 int timer = 0;
 long encoder_data[2];
 float left_speed, right_speed;
- 
+
 std_msgs::Int16 batt_perc_msg;
 std_msgs::Int32MultiArray encoders_msg;
 std_msgs::Int16MultiArray line_sensors_msg;
 std_msgs::Int16MultiArray light_sensors_msg;
 std_msgs::Int16MultiArray sharp_sensors_msg;
+std_msgs::Float32MultiArray imu_sensors_msg;
 
 void motorsSpeedCallback(const std_msgs::Float32MultiArray& msg);
 
@@ -27,6 +28,7 @@ ros::Publisher encodersPub("/encoders_data", &encoders_msg);
 ros::Publisher lineSensorsPub("/line_sensors", &line_sensors_msg);
 ros::Publisher lightSensorsPub("/light_sensors", &light_sensors_msg);
 ros::Publisher sharpSensorsPub("/sharp_sensors", &sharp_sensors_msg);
+ros::Publisher imuSensorPub("/imu_sensors", &imu_sensors_msg);
 ros::Subscriber<std_msgs::Float32MultiArray> subMotorsSpeed("/speed_motors", motorsSpeedCallback);
 
 void publish_battery() {
@@ -34,34 +36,37 @@ void publish_battery() {
   battPercPub.publish(&batt_perc_msg);
 }
 
-void publish_encoders(){
-  
+void publish_encoders() {
+
   encoders_msg.data_length = 2;
   encoder_data[0] = encoder_left();
   encoder_data[1] = encoder_right();
   encoders_msg.data = encoder_data;
-  
+
   encodersPub.publish(&encoders_msg);
 }
 
-void publish_sensors_data(){
+  void publish_sensors_data() {
 
-  read_sensors_data();
-  line_sensors_msg.data_length  = 3;
-  light_sensors_msg.data_length = 8;
-  sharp_sensors_msg.data_length = 7;
-  
-  line_sensors_msg.data  = get_line_sensors();
-  light_sensors_msg.data = get_light_sensors();
-  sharp_sensors_msg.data = get_sharp_sensors();
+    read_sensors_data();
+    line_sensors_msg.data_length  = 3;
+    light_sensors_msg.data_length = 8;
+    sharp_sensors_msg.data_length = 7;
+    imu_sensors_msg.data_length = 9;
 
-  lineSensorsPub.publish(&line_sensors_msg);
-  lightSensorsPub.publish(&light_sensors_msg);
-  sharpSensorsPub.publish(&sharp_sensors_msg);  
-}
+    line_sensors_msg.data  = get_line_sensors();
+    light_sensors_msg.data = get_light_sensors();
+    sharp_sensors_msg.data = get_sharp_sensors();
+    imu_sensors_msg.data = get_imu_sensors();
+
+    lineSensorsPub.publish(&line_sensors_msg);
+    lightSensorsPub.publish(&light_sensors_msg);
+    sharpSensorsPub.publish(&sharp_sensors_msg);
+    imuSensorPub.publish(&imu_sensors_msg);
+  }
 
 void motorsSpeedCallback(const std_msgs::Float32MultiArray& msg){
-   
+
   left_speed  = msg.data[0];
   right_speed = msg.data[1];
   timer = 0;
@@ -70,17 +75,18 @@ void motorsSpeedCallback(const std_msgs::Float32MultiArray& msg){
 void setup() {
   nh.getHardware()->setBaud(BAUD);
   nh.initNode();
-  
+
   nh.advertise(battPercPub);
   nh.advertise(encodersPub);
   nh.advertise(lineSensorsPub);
   nh.advertise(lightSensorsPub);
   nh.advertise(sharpSensorsPub);
+  nh.advertise(imuSensorPub);
   nh.subscribe(subMotorsSpeed);
 
- 
+
   while (!nh.connected()) { nh.spinOnce(); }
-  
+
   bool params_error = false;
   char log_msg[50];
   char Kp[8], Ki[8], Kd[8];
@@ -116,7 +122,7 @@ void setup() {
   dtostrf(right_pid2[2], 6, 4, Kd);
   sprintf(log_msg, "Right pid 2->[%s, %s, %s]", Kp, Ki, Kd);
   nh.loginfo(log_msg);
- 
+
   set_motors(left_pid1, left_pid2, right_pid1, right_pid2);
 }
 

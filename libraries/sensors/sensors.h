@@ -5,3 +5,4 @@ int get_battery_sensor();
 int* get_light_sensors();
 int* get_sharp_sensors();
 int* get_line_sensors();
+float* get_imu_sensors();
